@@ -1,0 +1,23 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    user: "5004:5004"
+    ports:
+      - 7878:7878
+    environment:
+      - PUID=5004
+      - PGID=5004
+      - TZ=${TZ}
+    volumes:
+      - ./config:/config
+      - /mnt/media-server:/data
+    restart: unless-stopped
+
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run:uid=5004,gid=5004,exec
+    security_opt:
+      - no-new-privileges:true
+

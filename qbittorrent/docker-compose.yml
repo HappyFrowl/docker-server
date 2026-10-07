@@ -1,0 +1,27 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.2.3_v2.0.15-ls478
+    container_name: qbittorrent
+    user: 5004:5004
+    network_mode: container:gluetun
+    volumes:
+      - ./config:/config
+      - /mnt/media-server/torrents:/data/torrents/ 
+    tmpfs:
+      - /run:uid=5004,gid=5004,exec
+    read_only: true
+    security_opt:
+      - no-new-privileges=true
+    env_file: .env
+    environment:
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=${TORRENTING_PORT}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2.5G
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://127.0.0.1:8080 || exit 1"]

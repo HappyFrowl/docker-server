@@ -1,0 +1,45 @@
+services:
+  app:
+    image: robiningelbrecht/dreeve:latest
+    container_name: dreeve
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./appdata/config:/var/www/config/app
+      - ./appdata/build:/var/www/build
+      - ./appdata/storage/database:/var/www/storage/database
+      - ./appdata/storage/files:/var/www/storage/files
+      - ./watch:/var/www/watch
+    env_file: ./.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2019/metrics"]
+      start_period: 60s
+    ports:
+      - 8082:8080
+    networks:
+      - statistics-for-strava-network
+
+  daemon:
+    image: robiningelbrecht/dreeve:latest
+    container_name: dreeve-daemon
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./appdata/config:/var/www/config/app
+      - ./appdata/build:/var/www/build
+      - ./appdata/storage/database:/var/www/storage/database
+      - ./appdata/storage/files:/var/www/storage/files
+      - ./watch:/var/www/watch
+    env_file: ./.env
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "test -f /var/www/storage/database/strava.db && echo 'ok' || exit 1" ]
+      start_period: 5s
+    entrypoint: ['bin/console', 'app:daemon:run']
+    networks:
+      - statistics-for-strava-network
+
+networks:
+  statistics-for-strava-network:
+

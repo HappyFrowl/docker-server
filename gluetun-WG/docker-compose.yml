@@ -1,0 +1,41 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    ports:
+      - 8080:8080 # Qbit Web UI
+      - 9696:9696 # Prowlarr
+      - 127.0.0.1:8191:8191 # Flaresolverr
+    volumes:
+      - ./gluetun/config:/gluetun
+      - ./gluetun/tmp:/tmp/gluetun
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - CHOWN
+    security_opt:
+      - no-new-privileges=true
+    env_file: ".env"
+    environment:
+      - DNS_UPSTREAM_RESOLVERS=cloudflare
+      - DNS_UPSTREAM_RESOLVER_TYPE=dot
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - TZ=${TZ}
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=${VPN_PROVIDER}
+      - VPN_PORT_FORWARDING_USERNAME=${VPN_USERNAME}
+      - VPN_PORT_FORWARDING_PASSWORD=${VPN_PASSWORD}
+      - SERVER_NAMES=${SERVER_NAMES}
+      - WIREGUARD_ENDPOINT_IP=${WIREGUARD_IP}
+      - WIREGUARD_ENDPOINT_PORT=${WIREGUARD_PORT}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - FIREWALL_OUTBOUND_SUBNETS=${FIREWALL_OUTBOUND_SUBNETS} # This allows for intrasubnet network communication. 
+      - WIREGUARD_MTU=1400
+      - LOGLEVEL=debug
+    restart: unless-stopped

@@ -1,0 +1,27 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    user: 5004:5004
+    group_add:
+      - '105'  #required in order to take hold of the igpu 
+    ports:
+      - '8096:8096'
+    volumes:
+      - ./config:/config
+      - /mnt/media-server/media/tv:/media/tv
+      - /mnt/media-server/media/movies:/media/movies
+    devices: 
+      - /dev/dri/renderD128:/dev/dri/renderD128   # igpu config
+    environment:
+      - JELLYFIN_PublishedServerUrl=$(SERVER)
+      - TZ=${TZ}
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+      #read_only: true
+      #tmpfs:
+      #  - /cache:size=3g
+      #  - /tmp
+    restart: 'unless-stopped'

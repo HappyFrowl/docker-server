@@ -1,0 +1,22 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    user: "5004:5004"
+    ports:
+      - 8989:8989
+    volumes:
+      - ./config:/config
+      - /mnt/media-server:/data
+    environment:
+      - PUID=5004
+      - PGID=5004
+      - TZ=${TZ}
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run:uid=5004,gid=5004,exec
+    security_opt:
+      - no-new-privileges:true
+

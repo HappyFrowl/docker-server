@@ -1,0 +1,48 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    user: 911:911
+    ports:
+      - 9091:9000
+    volumes:
+      - ./data:/app/data/
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges=true
+    env_file: ".env"
+    environment:
+      LOG_LEVEL: info
+      TZ: ${TZ}
+      BASE_URL: ${BASE_URL}
+
+      # For OAUTH SSO
+      OIDC_AUTH_ENABLED: true
+      OIDC_SIGNUP_ENABLED: true
+      OIDC_REMEMBER_ME: true
+      ALLOW_SIGNUP: true
+      OIDC_CONFIGURATION_URL: ${OIDC_CONFIG_URL}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}  
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_ADMIN_GROUP: mealie_admins
+      OIDC_USER_GROUP: mealie_users
+      OIDC_AUTO_REDIRECT: "true"
+      OIDC_PROVIDER_NAME: "Authentik SSO"
+      OIDC_USER_CLAIM: preferred_username
+      
+
+      # For OpenAI integration
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      
+      DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
+      # =====================================
+      # Email Configuration
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: 587
+      SMTP_FROM_NAME: Mealie
+      SMTP_AUTH_STRATEGY: TLS # Options: 'TLS', 'SSL', 'NONE'
+      SMTP_FROM_EMAIL: ${SMTP_USER}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    restart: unless-stopped

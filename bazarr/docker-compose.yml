@@ -1,0 +1,22 @@
+services:
+  bazarr:
+    image: ghcr.io/linuxserver/bazarr
+    container_name: bazarr
+    user: "5004:5004"
+    ports:
+      - 6767:6767
+    volumes:
+      - './config:/config'
+      - '/mnt/media-server/media:/data/media'
+    environment:
+      - PUID=5004
+      - PGID=5004
+      - TZ=${TZ}
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run:uid=5004,gid=5004,exec
+    security_opt:
+      - no-new-privileges:true
+

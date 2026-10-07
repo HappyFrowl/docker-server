@@ -1,0 +1,21 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    user: "5004:5004"
+    network_mode: container:gluetun
+    volumes:
+      - ./config:/config
+    environment:
+      - PUID=5004
+      - PGID=5004
+      - TZ=${TZ}
+    restart: unless-stopped
+
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run:uid=5004,gid=5004,exec
+    security_opt:
+      - no-new-privileges:true
+

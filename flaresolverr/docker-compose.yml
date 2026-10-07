@@ -1,0 +1,15 @@
+services:
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    network_mode: container:gluetun
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    env_file: .env
+    environment:
+      - TZ=${TZ}
+      - LOG_LEVEL=info
+    restart: unless-stopped
+
